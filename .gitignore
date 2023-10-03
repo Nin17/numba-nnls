@@ -1,0 +1,10 @@
+__pycache__
+/build
+/envs
+*.ipynb
+*.dylib
+
+
+*.mod
+*.so
+
