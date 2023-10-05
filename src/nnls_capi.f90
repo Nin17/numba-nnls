@@ -5,8 +5,8 @@ module nnls_capi
     public nnls_c, nnls_c_wrapper
 
     contains
-        subroutine NNLS_C_WRAPPER(A, MDA, M, N, B, X, RNORM, W, ZZ, INDEX, MODE, &
-            &MAXITER) bind(c, name="nnls_c_wrapper")
+        subroutine NNLS_C(A, MDA, M, N, B, X, RNORM, W, ZZ, INDEX, MODE, &
+            &MAXITER) bind(c, name="nnls_c")
             implicit none
             
             integer(c_int), value :: MDA
@@ -24,10 +24,10 @@ module nnls_capi
 
             call NNLS(A, M, M, N, B, X, RNORM, W, ZZ, INDEX, MODE, MAXITER)
             
-        end subroutine nnls_c_wrapper
+        end subroutine nnls_c
 
 
-        subroutine NNLS_C(A, M, N, B, X, RNORM, MODE, MAXITER) bind(c, name="nnls_c")
+        subroutine NNLS_C_WRAPPER(A, M, N, B, X, RNORM, MODE, MAXITER) bind(c, name="nnls_c_wrapper")
             implicit none
 
             integer(c_int), value :: M
@@ -53,5 +53,5 @@ module nnls_capi
             deallocate (W)
             deallocate (ZZ)
             deallocate (INDEX)
-        end subroutine nnls_c
+        end subroutine nnls_c_wrapper
 end module nnls_capi
