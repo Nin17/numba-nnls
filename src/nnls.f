@@ -54,10 +54,10 @@ C     ------------------------------------------------------------------
       integer I, II, IP, ITER, ITMAX, IZ, IZ1, IZ2, IZMAX, J, JJ, JZ, L
       integer M, MDA, MODE,N, NPP1, NSETP, RTNKEY
       integer MAXITER
-      integer INDEX(N)  
-      double precision A(MDA,N), B(M), W(N), X(N), ZZ(M)   
-c      integer INDEX(*)  
-c      double precision A(MDA,*), B(*), W(*), X(*), ZZ(*)   
+c      integer INDEX(N)  
+c      double precision A(MDA,N), B(M), W(N), X(N), ZZ(M)   
+      integer INDEX(*)  
+      double precision A(MDA,*), B(*), W(*), X(*), ZZ(*)   
       double precision ALPHA, ASAVE, CC, DIFF, DUMMY(1), FACTOR, RNORM
       double precision SM, SS, T, TEMP, TWO, UNORM, UP, WMAX
       double precision ZERO, ZTEST
@@ -482,4 +482,3 @@ C     ------------------------------------------------------------------
       STERM=ONE   
       RETURN
       END   
-

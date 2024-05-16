@@ -6,7 +6,7 @@ module nnls_capi
 
     contains
         subroutine NNLS_C(A, MDA, M, N, B, X, RNORM, W, ZZ, INDEX, MODE, &
-            &MAXITER) bind(c, name="nnls_c")
+            MAXITER) bind(c, name="nnls_c")
             implicit none
             
             integer(c_int), value :: MDA
@@ -27,7 +27,8 @@ module nnls_capi
         end subroutine nnls_c
 
 
-        subroutine NNLS_C_WRAPPER(A, M, N, B, X, RNORM, MODE, MAXITER) bind(c, name="nnls_c_wrapper")
+        subroutine NNLS_C_WRAPPER(A, M, N, B, X, RNORM, MODE, MAXITER) &
+            bind(c, name="nnls_c_wrapper")
             implicit none
 
             integer(c_int), value :: M
@@ -39,7 +40,7 @@ module nnls_capi
             real(c_double), intent(out) :: X(N)
             real(c_double), intent(out) :: RNORM
 
-
+            ! ??? alocate 1 array and slice it
             real(c_double), allocatable :: W(:)
             real(c_double), allocatable :: ZZ(:)
             integer(c_int), allocatable :: INDEX(:)
