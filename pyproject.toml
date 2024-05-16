@@ -1,0 +1,30 @@
+[build-system]
+build-backend = 'mesonpy'
+requires = ['meson-python']
+
+[project]
+name = 'nnls_numba'
+version = '0.1.0'
+description = 'Numba compatible implementations of scipy.optimize.nnls.'
+readme = 'README.md'
+license = {file = 'LICENSE'}
+authors = [{name = 'Chris Ninham', email = 'christopher.ninham@creatis.insa-lyon.fr'},]
+dependencies = ["numba", "numpy"]
+
+[project.optional-dependencies]
+test = [
+    "pytest", "scipy"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Nin17/nnls_numba"
+"Bug Tracker" = "https://github.com/Nin17/nnls_numba/issues"
+
+
+[project.entry-points.numba_extensions]
+init = "nnls_numba:_init"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
