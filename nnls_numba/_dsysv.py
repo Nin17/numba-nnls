@@ -1,77 +1,53 @@
-"""_summary_
-"""
+"""_summary_"""
 
-# pylint: disable=invalid-name
+from __future__ import annotations
 
-import ctypes as ct
+from ctypes.util import find_library
 
-import numba as nb
-import numpy as np
+from llvmlite import binding
+from numba import njit, types
+from numpy import empty, float64, int32
 from numpy.typing import NDArray
 
-_PTR = ct.POINTER
-_dble = ct.c_double
-_int = ct.c_int
+from .utils import ptr_from_val, val_from_ptr
 
-_ptr_dble = _PTR(_dble)
-_ptr_int = _PTR(_int)
+binding.load_library_permanently(find_library("lapack"))  # ???: cython address scipy
 
-# Signature of dsysv:
-# void dsysv(
-# char *uplo,
-# int *n,
-# int *nrhs,
-# d *a,
-# int *lda,
-# int *ipiv,
-# d *b,
-# int *ldb,
-# d *work,
-# int *lwork,
-# int *info
-# )
 
-addr = nb.extending.get_cython_function_address(
-    "scipy.linalg.cython_lapack", "dsysv"
-)
-functype = ct.CFUNCTYPE(
-    None,  # return type
-    ct.c_void_p,  # *uplo
-    _ptr_int,  # *n
-    _ptr_int,  # *nrhs
-    _ptr_dble,  # *a
-    _ptr_int,  # *lda
-    _ptr_int,  # *ipiv
-    _ptr_dble,  # *b
-    _ptr_int,  # *ldb
-    _ptr_dble,  # *work
-    _ptr_int,  # *lwork
-    _ptr_int,  # *info
+_ptr_int = types.CPointer(types.int32)
+_ptr_dble = types.CPointer(types.float64)
+
+_dsysv = types.ExternalFunction(
+    "dsysv_",
+    types.void(
+        types.CPointer(types.int64),  # uplo
+        _ptr_int,  # *n
+        _ptr_int,  # *nrhs
+        _ptr_dble,  # *a
+        _ptr_int,  # *lda
+        _ptr_int,  # *ipiv
+        _ptr_dble,  # *b
+        _ptr_int,  # *ldb
+        _ptr_dble,  # *work
+        _ptr_int,  # *lwork
+        _ptr_int,  # *info
+    ),
 )
 
 
-_L = ct.cast("L".encode("utf-8"), ct.c_void_p).value
-_U = ct.cast("U".encode("utf-8"), ct.c_void_p).value
-
-
-_dsysv = functype(addr)
-
-
-@nb.njit
+@njit
 def numba_dsysv(
-    A: NDArray[np.float64], b: NDArray[np.float64], uplo: str = "L"
-) -> NDArray[np.float64]:
+    A: NDArray[float64], b: NDArray[float64], uplo: str = "L"
+) -> NDArray[float64]:
     """
     A numba wrapper of the dsysv function from LAPACK.
 
-    For uplo="L", it is equivalent to:
-        scipy.linalg.solve(A, b, lower=True, overwrite_a = True,
-                            overwrite_b = True, check_finite=False,
-                            assume_a="sym", transposed=False)
-    and for uplo="U", it is equivalent to:
-        scipy.linalg.solve(A, b, lower=False, overwrite_a = True,
-                            overwrite_b = True, check_finite=False,
-                            assume_a="sym", transposed=False)
+    It is equivalent to:
+        scipy.linalg.solve(asfortranarray(A), b, lower=(uplo == "L"),
+                            overwrite_a = True, overwrite_b = True,
+                            check_finite=False, assume_a="sym",
+                            transposed=False)
+
 
     A and b are modified in-place, the original values are therefore lost.
     If these are required, make a copy before calling this function.
@@ -93,9 +69,9 @@ def numba_dsysv(
 
     Parameters
     ----------
-    A : (N, N) NDArray[np.float64]
+    A : (N, N) NDArray[float64]
         Symmetric square matrix A, only the lower/upper triangle is needed.
-    b : (N, NRHS) NDArray[np.float64]
+    b : (N, NRHS) NDArray[float64]
         Input data for the right hand side.
     uplo : str, optional
         Either "L" or "U" denoting whether the lower or upper triangle of A
@@ -103,7 +79,7 @@ def numba_dsysv(
 
     Returns
     -------
-    (N, NRHS) NDArray[np.float64]
+    (N, NRHS) NDArray[float64]
         The solution array
 
     Raises
@@ -111,63 +87,59 @@ def numba_dsysv(
     RuntimeError
         If the LAPACK function fails whilst determining the optimal lwork
     """
-    uplo_dict = {"U": _U, "L": _L}
-    _uplo = uplo_dict[uplo]
+    uploptr = ptr_from_val(ord(uplo))
 
-    _n = A.shape[0]
+    _n = int32(A.shape[0])
+
+    nptr = ptr_from_val(_n)
 
     if b.ndim == 1:
-        _nrhs = 1
+        _b = b
+        _nrhs = int32(1)
     elif b.ndim == 2:
-        _nrhs = b.shape[-1]
+        _nrhs = int32(b.shape[-1])
+        _b = b
 
-    n = np.array(_n, dtype=np.int32)
-    nrhs = np.array(_nrhs, dtype=np.int32)
-    lda = np.array(_n, dtype=np.int32)
-    ipiv = np.empty(_n, dtype=np.int32)
-    ldb = np.array(_n, dtype=np.int32)
-    work = np.empty(1, dtype=np.float64)
-    lwork = np.array(-1, dtype=np.int32)  # -1 to get optimal lwork
-    info = np.empty(1, dtype=np.int32)
+    nrhsptr = ptr_from_val(_nrhs)
+
+    ipiv = empty(_n, dtype=int32)
+    work = empty(1, dtype=float64)
+    infoptr = ptr_from_val(int32(0))
 
     # Get optimal lwork for dsysv
     _dsysv(
-        _uplo,
-        n.ctypes,
-        nrhs.ctypes,
-        A.view(np.float64).ctypes,
-        lda.ctypes,
-        ipiv.view(np.int32).ctypes,
-        b.view(np.float64).ctypes,
-        ldb.ctypes,
+        uploptr,
+        nptr,
+        nrhsptr,
+        A.view(float64).ctypes,
+        nptr,
+        ipiv.ctypes,
+        _b.view(float64).ctypes,
+        nptr,
         work.ctypes,
-        lwork.ctypes,
-        info.ctypes,
+        ptr_from_val(int32(-1)),  # -1 to get optimal lwork
+        infoptr,
     )
+    if val_from_ptr(infoptr):
+        raise RuntimeError(
+            f"LAPACK dsysv failed with error code: {val_from_ptr(infoptr)}"
+        )
 
-    def _check_info(info):
-        if info[0] != 0:
-            raise RuntimeError(
-                f"LAPACK dsysv failed with error code: {info[0]}"
-            )
-
-    _check_info(info)
-
-    _ws = int(work[0])
-    lwork = np.array(_ws, dtype=np.int32)
-    work = np.empty(_ws, dtype=np.float64)
+    lwork = int32(work[0])
+    work = empty(lwork, dtype=float64)
+    lworkptr = ptr_from_val(lwork)
 
     _dsysv(
-        _uplo,
-        n.ctypes,
-        nrhs.ctypes,
-        A.view(np.float64).ctypes,
-        lda.ctypes,
-        ipiv.view(np.int32).ctypes,
-        b.view(np.float64).ctypes,
-        ldb.ctypes,
+        uploptr,
+        nptr,
+        nrhsptr,
+        A.view(float64).ctypes,
+        nptr,
+        ipiv.ctypes,
+        _b.view(float64).ctypes,
+        nptr,
         work.ctypes,
-        lwork.ctypes,
-        info.ctypes,
+        lworkptr,
+        infoptr,
     )
     return b
