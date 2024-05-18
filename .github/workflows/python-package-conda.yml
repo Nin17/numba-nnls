@@ -13,7 +13,7 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        C:\Miniconda\condabin\conda.bat install lapack numba pytest ruff scipy --name base
+        C:\Miniconda\condabin\conda.bat install lapack numba pytest ruff scipy --name base --channel conda-forge
         C:\Miniconda\condabin\conda.bat init powershell
         python -m pip install --upgrade pip
         python -m pip install .
