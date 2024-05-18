@@ -28,6 +28,9 @@ jobs:
           python -m pip install --upgrade pip
           pwd
           ls
+          cd ..
+          pwd
+          ls
       #     python -m pip install .
       # - name: Lint with Ruff
       #   run: |
