@@ -22,6 +22,9 @@ pip install .
 
 Conda installation coming soon.
 
+> [!IMPORTANT]  
+> On windows, you also need to install lapack: `conda install conda-forge::lapack`
+
 ## Usage
 
 Simply install `nnls_numba` in your environment to use `scipy.optimize.nnls` in nopython numba functions:

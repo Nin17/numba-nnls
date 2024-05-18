@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 
 from .utils import ptr_from_val, val_from_ptr
 
-binding.load_library_permanently(find_library("lapack"))  # ???: cython address scipy
+binding.load_library_permanently(find_library("lapack") or find_library("liblapack"))  # ???: cython address scipy
 
 
 _ptr_int = types.CPointer(types.int32)
