@@ -9,7 +9,7 @@ description = 'Numba compatible implementations of scipy.optimize.nnls.'
 readme = 'README.md'
 license = {file = 'LICENSE'}
 authors = [{name = 'Chris Ninham', email = 'christopher.ninham@creatis.insa-lyon.fr'},]
-dependencies = ["numba", "numpy"]
+dependencies = ["numba", "numpy", "scipy"]
 
 [project.urls]
 "Homepage" = "https://github.com/Nin17/numba-nnls"
