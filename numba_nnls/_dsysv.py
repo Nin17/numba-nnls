@@ -1,18 +1,16 @@
-"""_summary_"""
+"""Numba wrapper for LAPACK dsysv function from scipy.linalg.cython_lapack."""
 
 from __future__ import annotations
-
-from ctypes.util import find_library
 
 from llvmlite import binding
 from numba import njit, types
 from numpy import empty, float64, int32
 from numpy.typing import NDArray
 
-from .utils import ptr_from_val, val_from_ptr
+from .utils import get_scipy_linalg_lib, ptr_from_val, val_from_ptr
 
-binding.load_library_permanently(find_library("lapack") or find_library("liblapack"))  # ???: cython address scipy
-
+_path = get_scipy_linalg_lib("cython_lapack")
+binding.load_library_permanently(_path)
 
 _ptr_int = types.CPointer(types.int32)
 _ptr_dble = types.CPointer(types.float64)

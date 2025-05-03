@@ -1,9 +1,11 @@
 """_summary_"""
 
 from pathlib import Path
+from sysconfig import get_config_var
 
 from numba.core import cgutils, types
 from numba.extending import intrinsic
+from scipy import linalg
 
 
 @intrinsic
@@ -47,3 +49,14 @@ def get_extension_path(lib_name):
         return str(next(matches))
     except StopIteration:
         return None
+
+def get_scipy_linalg_lib(lib_name):
+    """
+    Modified from rocket-fft
+    """
+    search_path = Path(linalg.__file__).parent
+    ext_suffix = get_config_var("EXT_SUFFIX")
+    ext_path = f"**/{lib_name}{ext_suffix}"
+    matches = search_path.glob(ext_path)
+    lib_path = str(next(matches))
+    return lib_path
