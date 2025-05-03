@@ -3,6 +3,7 @@ __pycache__
 /envs
 *.ipynb
 *.dylib
+*.DS_Store
 
 *.mod
 *.so
@@ -10,4 +11,5 @@ __pycache__
 
 /.conda
 /.pytest_cache
+/.vscode
 /build
