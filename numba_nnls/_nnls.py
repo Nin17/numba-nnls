@@ -12,7 +12,7 @@ from numpy.typing import NDArray
 from ._dsysv import numba_dsysv
 from .utils import get_extension_path, ptr_from_val, val_from_ptr
 
-__all__ = ["nnls_007_111", "nnls_007_111_", "nnls_112_114", "nnls_115_"]
+__all__ = ("nnls_007_111", "nnls_007_111_", "nnls_112_114", "nnls_115_")
 
 
 _path = find_library("nnlsnumba") or get_extension_path("libnnlsnumba")
@@ -373,7 +373,7 @@ def _nnls_112_114(A, b, maxiter=None, tol=None):
 
 # TODO: implement a version of this function
 
-def _nnls_115_(
+def nnls_115_(
     A: NDArray[np.float64],
     b: NDArray[np.float64],
     maxiter: np.int32,
