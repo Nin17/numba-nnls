@@ -13,7 +13,7 @@ try:
 except ImportError:
     HAS_SCIPY = False
 
-from nnls_numba import nnls_old
+from numba_nnls import nnls_old
 
 REASON = "test only for 0.7 <= scipy.__version__ < 1.12 if scipy is installed"
 

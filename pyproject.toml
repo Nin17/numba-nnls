@@ -3,7 +3,7 @@ build-backend = 'mesonpy'
 requires = ['meson-python']
 
 [project]
-name = 'nnls_numba'
+name = 'numba-nnls'
 version = '0.1.0'
 description = 'Numba compatible implementations of scipy.optimize.nnls.'
 readme = 'README.md'
@@ -15,12 +15,12 @@ dependencies = ["numba", "numpy"]
 dev = ['pytest', 'pytest-env', 'ruff', 'scipy']
 
 [project.urls]
-"Homepage" = "https://github.com/Nin17/nnls_numba"
-"Bug Tracker" = "https://github.com/Nin17/nnls_numba/issues"
+"Homepage" = "https://github.com/Nin17/numba-nnls"
+"Bug Tracker" = "https://github.com/Nin17/numba-nnls/issues"
 
 
 [project.entry-points.numba_extensions]
-init = "nnls_numba:_init"
+init = "numba_nnls:_init"
 
 [tool.pytest.ini_options]
 addopts = [
