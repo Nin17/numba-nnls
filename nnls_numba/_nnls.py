@@ -12,7 +12,7 @@ from numpy.typing import NDArray
 from ._dsysv import numba_dsysv
 from .utils import get_extension_path, ptr_from_val, val_from_ptr
 
-__all__ = ["nnls_old", "nnls_old_", "nnls_new"]
+__all__ = ["nnls_007_111", "nnls_007_111_", "nnls_112_114", "nnls_115_"]
 
 
 _path = find_library("nnlsnumba") or get_extension_path("libnnlsnumba")
@@ -23,10 +23,8 @@ else:
     raise RuntimeError("Could not find the library libnnlsnumba")
 
 
-# ------------------------------------- nnls_old_ ------------------------------------ #
-
-
-_nnls_c = types.ExternalFunction(
+# ------------------------ "0.7" <= scipy.__version__ < "1.12" ----------------------- #
+_nnls_fortran_c = types.ExternalFunction(
     "nnls_c",
     types.void(
         types.CPointer(types.float64),  # A(MDA, N)
@@ -46,7 +44,7 @@ _nnls_c = types.ExternalFunction(
 
 
 @njit
-def nnls_old_(
+def nnls_007_111_(
     A: NDArray[np.float64],
     m: np.int32,
     n: np.int32,
@@ -94,7 +92,7 @@ def nnls_old_(
         The solution vector, the residual and the success flag
         All modified in place
     """
-    _nnls_c(
+    _nnls_fortran_c(
         np.asfortranarray(A).view(np.float64).ctypes,
         m,
         m,
@@ -111,9 +109,7 @@ def nnls_old_(
     return x, rnorm.item(), mode.item()
 
 
-# ------------------------------------- nnls_old ------------------------------------- #
-
-_nnls_c_wrapper = types.ExternalFunction(
+_nnls_fortran_c_wrapper = types.ExternalFunction(
     "nnls_c_wrapper",
     types.void(
         types.CPointer(types.float64),
@@ -129,7 +125,7 @@ _nnls_c_wrapper = types.ExternalFunction(
 
 
 @extending.register_jitable
-def _nnls_old(A, b, maxiter=-1) -> tuple[NDArray[np.float64], float]:
+def _nnls_007_111(A, b, maxiter=-1) -> tuple[NDArray[np.float64], float]:
     A = np.asarray_chkfinite(A).copy()
     b = np.asarray_chkfinite(b).copy()
     if A.ndim != 2:
@@ -155,7 +151,7 @@ def _nnls_old(A, b, maxiter=-1) -> tuple[NDArray[np.float64], float]:
 
     x = np.empty(n, dtype=np.float64)
 
-    _nnls_c_wrapper(
+    _nnls_fortran_c_wrapper(
         np.asfortranarray(A).view(np.float64).ctypes,
         m,
         n,
@@ -172,7 +168,7 @@ def _nnls_old(A, b, maxiter=-1) -> tuple[NDArray[np.float64], float]:
 
 
 @njit
-def nnls_old(A, b, maxiter=-1):
+def nnls_007_111(A, b, maxiter=-1):
     """
     Numba wrapper of the nnls subroutine used in scipy.optimize.nnls, from version
     0.7 to 1.11
@@ -206,11 +202,9 @@ def nnls_old(A, b, maxiter=-1):
     RuntimeError
         If the maximum number of iterations is reached
     """
-    return _nnls_old(A, b, maxiter)
+    return _nnls_007_111(A, b, maxiter)
 
-
-# ------------------------------------- nnls_new ------------------------------------- #
-
+# ----------------------- "1.12" <= scipy.__version__ < "1.15" ----------------------- #
 # # TODO can probably allocate this array and overwrite each time
 # # would then have to only change the call to dsysv
 
@@ -268,7 +262,7 @@ def _ix_2d(a: NDArray[np.int32], b: NDArray[np.float64], out) -> NDArray[np.floa
 
 
 @extending.register_jitable
-def nnls_new(
+def nnls_112_114(
     A,
     b,
     maxiter=None,
@@ -323,7 +317,7 @@ def nnls_new(
             + f"A is {m}, while the shape of b is {(b.shape[0], )}"
         )
 
-    x, rnorm, mode = _nnls_new(A, b, maxiter, atol)
+    x, rnorm, mode = _nnls_112_114(A, b, maxiter, atol)
     if mode != 1:
         raise RuntimeError("Maximum number of iterations reached.")
 
@@ -331,7 +325,7 @@ def nnls_new(
 
 
 @njit
-def _nnls_new(A, b, maxiter=None, tol=None):
+def _nnls_112_114(A, b, maxiter=None, tol=None):
     m, n = A.shape
     AtA = A.T @ A
     Atb = b @ A
@@ -374,3 +368,31 @@ def _nnls_new(A, b, maxiter=None, tol=None):
         return x, 0.0, -1
 
     return x, np.linalg.norm(A @ x - b), 1
+
+# ---------------------------- "1.15" <= scipy.__version__ --------------------------- #
+
+# TODO: implement a version of this function
+
+def _nnls_115_(
+    A: NDArray[np.float64],
+    b: NDArray[np.float64],
+    maxiter: np.int32,
+) -> tuple[NDArray[np.float64], float]:
+    """
+    Wrapper of the nnls subroutine used in scipy.optimize.nnls from version 1.15
+
+    Parameters
+    ----------
+    A : NDArray[np.float64]
+        m by n matrix
+    b : NDArray[np.float64]
+        m vector
+    maxiter : np.int32
+        Maximum number of iterations
+
+    Returns
+    -------
+    tuple[NDArray[np.float64], float]
+        The solution vector and the residual
+    """
+    raise NotImplementedError("This function is not implemented yet.")

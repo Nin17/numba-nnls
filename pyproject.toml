@@ -12,9 +12,7 @@ authors = [{name = 'Chris Ninham', email = 'christopher.ninham@creatis.insa-lyon
 dependencies = ["numba", "numpy"]
 
 [project.optional-dependencies]
-test = [
-    "pytest", "scipy"
-]
+dev = ['pytest', 'pytest-env', 'ruff', 'scipy']
 
 [project.urls]
 "Homepage" = "https://github.com/Nin17/nnls_numba"
@@ -28,3 +26,6 @@ init = "nnls_numba:_init"
 addopts = [
     "--import-mode=importlib",
 ]
+
+[tool.pytest_env]
+NUMBA_CAPTURED_ERRORS='new_style'
