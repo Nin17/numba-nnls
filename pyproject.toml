@@ -11,12 +11,12 @@ license = {file = 'LICENSE'}
 authors = [{name = 'Chris Ninham', email = 'christopher.ninham@creatis.insa-lyon.fr'},]
 dependencies = ["numba", "numpy"]
 
-[project.optional-dependencies]
-dev = ['pytest', 'pytest-env', 'ruff', 'scipy']
-
 [project.urls]
 "Homepage" = "https://github.com/Nin17/numba-nnls"
 "Bug Tracker" = "https://github.com/Nin17/numba-nnls/issues"
+
+[project.optional-dependencies]
+dev = ['pytest', 'pytest-env', 'ruff', 'scipy']
 
 
 [project.entry-points.numba_extensions]
