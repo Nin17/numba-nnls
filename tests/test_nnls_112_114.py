@@ -13,7 +13,7 @@ try:
 except ImportError:
     HAS_SCIPY = False
 
-from numba_nnls import nnls_new
+from numba_nnls import nnls_112_114
 
 REASON = "test only for nnls in scipy.__version__ >= 1.12 if scipy is installed"
 
@@ -31,8 +31,8 @@ class TestNNLS:
         assert np.linalg.norm((a @ x) - y) < 1e-7
 
     @pytest.mark.skipif(not HAS_SCIPY, reason="scipy not installed")
-    def test_nnls_new(self):
-        self._test_nnls(nnls_new)
+    def test_nnls_112_114(self):
+        self._test_nnls(nnls_112_114)
 
     @pytest.mark.skipif(not HAS_SCIPY or __version__ < "1.12", reason=REASON)
     def test_nnls_njit(self):
@@ -48,8 +48,8 @@ class TestNNLS:
         assert rnorm < 1e-12
 
     @pytest.mark.skipif(not HAS_SCIPY, reason="scipy not installed")
-    def test_nnls_new_tall(self):
-        self._test_nnls_tall(nnls_new)
+    def test_nnls_112_114_tall(self):
+        self._test_nnls_tall(nnls_112_114)
 
     @pytest.mark.skipif(not HAS_SCIPY or __version__ < "1.12", reason=REASON)
     def test_nnls_njit_tall(self):
@@ -67,8 +67,8 @@ class TestNNLS:
         assert rnorm < 1e-12
 
     @pytest.mark.skipif(not HAS_SCIPY, reason="scipy not installed")
-    def test_nnls_new_wide(self):
-        self._test_nnls_wide(nnls_new)
+    def test_nnls_112_114_wide(self):
+        self._test_nnls_wide(nnls_112_114)
 
     @pytest.mark.skipif(not HAS_SCIPY or __version__ < "1.12", reason=REASON)
     def test_nnls_njit_wide(self):
@@ -83,7 +83,7 @@ class TestNNLS:
 
     @pytest.mark.skipif(not HAS_SCIPY, reason="scipy not installed")
     def test_maxiter_new(self):
-        self._test_maxiter(nnls_new)
+        self._test_maxiter(nnls_112_114)
 
     @pytest.mark.skipif(not HAS_SCIPY or __version__ < "1.12", reason=REASON)
     def test_maxiter_njit(self):
@@ -328,8 +328,8 @@ class TestNNLS:
         assert_allclose(dact, d, rtol=0.0, atol=1e-10)
 
     @pytest.mark.skipif(not HAS_SCIPY, reason="scipy not installed")
-    def test_nnls_new_inner_loop_case1(self):
-        self._test_nnls_inner_loop_case1(nnls_new)
+    def test_nnls_112_114_inner_loop_case1(self):
+        self._test_nnls_inner_loop_case1(nnls_112_114)
 
     @pytest.mark.skipif(not HAS_SCIPY or __version__ < "1.12", reason=REASON)
     def test_nnls_njit_inner_loop_case1(self):
@@ -578,8 +578,8 @@ class TestNNLS:
         assert_allclose(dact, d, rtol=0.0, atol=1e-10)
 
     @pytest.mark.skipif(not HAS_SCIPY, reason="scipy not installed")
-    def test_nnls_new_inner_loop_case2(self):
-        self._test_nnls_inner_loop_case2(nnls_new)
+    def test_nnls_112_114_inner_loop_case2(self):
+        self._test_nnls_inner_loop_case2(nnls_112_114)
 
     @pytest.mark.skipif(not HAS_SCIPY or __version__ < "1.12", reason=REASON)
     def test_nnls_njit_inner_loop_case2(self):
@@ -1042,8 +1042,8 @@ class TestNNLS:
         assert_allclose(rnorm, 1.0556460808977297)
 
     @pytest.mark.skipif(not HAS_SCIPY, reason="Scipy not installed")
-    def test_nnls_new_gh20302(self):
-        self._test_nnls_gh20302(nnls_new)
+    def test_nnls_112_114_gh20302(self):
+        self._test_nnls_gh20302(nnls_112_114)
 
     @pytest.mark.skipif(not HAS_SCIPY or __version__ < "1.12", reason=REASON)
     def test_nnls_njit_gh20302(self):

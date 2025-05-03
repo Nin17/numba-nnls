@@ -13,7 +13,7 @@ try:
 except ImportError:
     HAS_SCIPY = False
 
-from numba_nnls import nnls_old
+from numba_nnls import nnls_007_111
 
 REASON = "test only for 0.7 <= scipy.__version__ < 1.12 if scipy is installed"
 
@@ -27,8 +27,8 @@ class TestNNLS:
         assert_(res < 1e-7)
         assert_(np.linalg.norm(np.dot(a, x) - y) < 1e-7)
 
-    def test_nnls_old(self):
-        self._test_nnls(nnls_old)
+    def test_nnls_007_111(self):
+        self._test_nnls(nnls_007_111)
 
     @pytest.mark.skipif(
         not HAS_SCIPY or __version__ < "0.7" or __version__ >= "1.12", reason=REASON
@@ -47,7 +47,7 @@ class TestNNLS:
             func(a, b, maxiter=1)
 
     def test_maxiter_old(self):
-        self._test_maxiter(nnls_old)
+        self._test_maxiter(nnls_007_111)
 
     @pytest.mark.skipif(
         not HAS_SCIPY or __version__ < "0.7" or __version__ >= "1.12", reason=REASON
