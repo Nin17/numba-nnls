@@ -1,5 +1,5 @@
 project(
-  'nnls_numba',
+  'numba_nnls',
   'fortran',
   version: '0.1.0',
   default_options: [
@@ -15,7 +15,7 @@ shared_library('nnlsnumba',
     'src/nnls_capi.f90'
     ],
     install: true,
-    install_dir: py3.get_install_dir() / 'nnls_numba',
+    install_dir: py3.get_install_dir() / 'numba_nnls',
 )
 
-subdir('nnls_numba')
+subdir('numba_nnls')

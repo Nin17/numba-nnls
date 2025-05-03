@@ -11,5 +11,5 @@ python_sources = [
 py3.install_sources(
   python_sources,
   pure: false,
-  subdir: 'nnls_numba'
+  subdir: 'numba_nnls'
 )
