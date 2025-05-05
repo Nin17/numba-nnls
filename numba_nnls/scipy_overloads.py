@@ -12,11 +12,11 @@ except ImportError:
 from ._nnls import _nnls_007_111, nnls_112_114, nnls_115_
 
 if HAS_SCIPY:
-    if __version__ >= "1.15":
-        extending.overload(optimize.nnls)(
-            lambda A, b, maxiter=None, atol=None: nnls_115_
-        )
-    elif __version__ >= "1.12":
+    # if __version__ >= "1.15":
+    #     extending.overload(optimize.nnls)(
+    #         lambda A, b, maxiter=None, atol=None: nnls_115_
+    #     )
+    if __version__ >= "1.12":
         extending.overload(optimize.nnls)(
             lambda A, b, maxiter=None, atol=None: nnls_112_114
         )
